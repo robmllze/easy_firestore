@@ -1,0 +1,140 @@
+<!--------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------->
+
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+
+  <!------------------------------------------------------------------------------------
+
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    References:
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+  ------------------------------------------------------------------------------------->
+
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="">
+
+  <!------------------------------------------------------------------------------------
+
+    ANDROID
+
+    References:
+    - https://developers.google.com/web/fundamentals/native-hardware/fullscreen
+
+  ------------------------------------------------------------------------------------->
+
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!------------------------------------------------------------------------------------
+
+    IOS
+
+  ------------------------------------------------------------------------------------->
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!------------------------------------------------------------------------------------
+
+    FAVICON
+
+  ------------------------------------------------------------------------------------->
+
+  <link rel="icon" type="image/png" href="icons/Icon-192.png" />
+
+  <!------------------------------------------------------------------------------------
+
+    TITLE
+
+  ------------------------------------------------------------------------------------->
+
+  <title></title>
+
+  <!------------------------------------------------------------------------------------
+
+    MANIFEST
+
+  ------------------------------------------------------------------------------------->
+
+  <link rel="manifest" href="manifest.json">
+
+</head>
+
+
+<body style="background-color: white">
+
+  <!------------------------------------------------------------------------------------
+
+    FIREBASE
+
+  ------------------------------------------------------------------------------------->
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script> -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-functions.js"></script> -->
+  <!-- <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js"></script> -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbgrhZ5L4zjZ-JgFFEpIymailpdQIfAXI",
+      authDomain: "hello-testing-123.firebaseapp.com",
+      projectId: "hello-testing-123",
+      storageBucket: "hello-testing-123.appspot.com",
+      messagingSenderId: "218512781018",
+      appId: "1:218512781018:web:0da34be6a7bdb588773fe3"
+    };
+    firebase.initializeApp(firebaseConfig);
+    //firebase.analytics();
+  </script>
+
+  <!------------------------------------------------------------------------------------
+
+    SERVICE WORKERS
+    
+    References:
+    - https://developers.google.com/web/fundamentals/primers/service-workers
+
+  ------------------------------------------------------------------------------------->
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("flutter-first-frame", function () {
+        navigator.serviceWorker.register("flutter_service_worker.js");
+      });
+    }
+  </script>
+
+  <!------------------------------------------------------------------------------------
+
+    MAIN
+
+    NB: Change version number here every time before deploying so that app
+    updates on user-end.
+
+  ------------------------------------------------------------------------------------->
+
+  <script src="main.dart.js?version=0.0.0.0" type="application/javascript"></script>
+
+</body>
+
+</html>

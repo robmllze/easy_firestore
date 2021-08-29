@@ -2,13 +2,15 @@ name: example
 publish_to: 'none'
 version: 0.1.0
 environment:
-  sdk: ">=2.13.4 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 dependencies:
-  firebase_core: ^1.6.0 
-  cloud_firestore: ^2.5.1 # https://pub.dev/packages/cloud_firestore
-  firebase_auth: ^3.1.0 # https://pub.dev/packages/firebase_auth
+  firebase_core: ^1.0.0 # https://pub.dev/packages/firebase_core
+  cloud_firestore: ^2.0.0 # https://pub.dev/packages/cloud_firestore
+  firebase_auth: ^3.0.0 # https://pub.dev/packages/firebase_auth
   easy_firestore:
     path: ../
+    # git:
+    #   url: https://github.com/robmllze/easy_firestore.git
   flutter:
     sdk: flutter
 flutter:
