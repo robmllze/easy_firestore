@@ -1,0 +1,13 @@
+name: easy_firestore
+description: An easier way to work with Firestore in Flutter.
+version: 0.1.0
+homepage:
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.17.0"
+dependencies:
+  cloud_firestore: ^2.0.0 # https://pub.dev/packages/cloud_firestore
+  uuid: ^3.0.0 # https://pub.dev/packages/uuid
+  prep: ^0.3.2 # https://pub.dev/packages/prep
+  flutter:
+    sdk: flutter

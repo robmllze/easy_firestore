@@ -1,0 +1,12 @@
+path: "./lib"
+syntax_beg: "<"
+syntax_end: ">"
+syntax_sep: "="
+include_env: false
+update_these_fields: {
+}
+parse_these_file_types: [
+  "dart",
+]
+dont_parse_these_files: [
+]

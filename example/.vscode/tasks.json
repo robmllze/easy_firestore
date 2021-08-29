@@ -1,0 +1,21 @@
+{
+    // See: https://go.microsoft.com/fwlink/?LinkId=733558
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "📘 Prep",
+            "type": "shell",
+            "command": "prep prep.yaml --path ./lib",
+        },
+        {
+            "label": "⚡ Prep & Serve",
+            "type": "shell",
+            "command": "prep prep.yaml --path ./lib;flutter run -d web-server --web-port 8080",
+        },
+        {
+            "label": "🌐 8080",
+            "type": "shell",
+            "command": "start http://localhost:8080",
+        }
+    ]
+}
