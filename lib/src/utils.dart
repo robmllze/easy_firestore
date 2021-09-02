@@ -11,7 +11,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prep/prep.dart' show PrepLog;
 
-import 'math.dart' show roundAt, roundToFigures;
+import 'math.dart';
 import 'misc.dart';
 import 'quota.dart';
 
@@ -158,7 +158,7 @@ Future<State> check() {
 Future<Map<String, dynamic>?> getDoc(
   final String nameColl,
   final String nameDoc, {
-  final Map<String, dynamic>? Function()? resOnErr,
+  final Map<String, dynamic>? Function()? onErr,
 }) {
   quota.regRead();
   return _fs.collection(nameColl).doc(nameDoc).get().then((__doc) {
@@ -179,7 +179,7 @@ Future<Map<String, dynamic>?> getDoc(
       "Failed to get doc $nameColl/$nameDoc: $e",
       "<#l=180>",
     );
-    return resOnErr?.call() ?? null;
+    return onErr?.call() ?? null;
   });
 }
 
@@ -190,7 +190,7 @@ Future<Map<String, dynamic>?> getDoc(
 Future<Map<String, dynamic>?> getDocTr(
   final String nameColl,
   final String nameDoc, {
-  final Map<String, dynamic>? Function()? resOnErr,
+  final Map<String, dynamic>? Function()? onErr,
 }) {
   final _doc = _fs.collection(nameColl).doc(nameDoc);
   quota.regRead();
@@ -216,7 +216,7 @@ Future<Map<String, dynamic>?> getDocTr(
       "Failed to get doc $nameColl/$nameDoc: $e",
       "<#l=217>",
     );
-    return resOnErr?.call() ?? null;
+    return onErr?.call() ?? null;
   });
 }
 
@@ -228,18 +228,18 @@ Future<Map<String, dynamic>?> getDoc1(
   final String nameColl,
   final String nameDoc, {
   final bool transaction = false,
-  final Map<String, dynamic>? Function()? resOnErr,
+  final Map<String, dynamic>? Function()? onErr,
 }) =>
     transaction
         ? getDocTr(
             nameColl,
             nameDoc,
-            resOnErr: resOnErr,
+            onErr: onErr,
           )
         : getDoc(
             nameColl,
             nameDoc,
-            resOnErr: resOnErr,
+            onErr: onErr,
           );
 
 //
@@ -250,14 +250,14 @@ Future<dynamic> getField(
   final String nameColl,
   final String nameDoc,
   final String nameField, {
-  final dynamic Function()? resOnErr,
+  final dynamic Function()? onErr,
 }) {
   return getDoc(
     nameColl,
     nameDoc,
-    resOnErr: () => DOC_ERROR,
+    onErr: () => DOC_ERROR,
   ).then((__data) {
-    if (__data == DOC_ERROR) return resOnErr?.call() ?? null;
+    if (__data == DOC_ERROR) return onErr?.call() ?? null;
     if (__data != null) {
       final _field = __data[nameField];
       if (_field == null) {
@@ -280,14 +280,14 @@ Future<dynamic> getFieldTr(
   final String nameColl,
   final String nameDoc,
   final String nameField, {
-  final dynamic Function()? resOnErr,
+  final dynamic Function()? onErr,
 }) {
   return getDocTr(
     nameColl,
     nameDoc,
-    resOnErr: () => DOC_ERROR,
+    onErr: () => DOC_ERROR,
   ).then((__data) {
-    if (__data == DOC_ERROR) return resOnErr?.call() ?? null;
+    if (__data == DOC_ERROR) return onErr?.call() ?? null;
     if (__data != null) {
       final _field = __data[nameField];
       if (_field == null) {
@@ -311,20 +311,20 @@ Future<dynamic> getField1(
   final String nameDoc,
   final String nameField, {
   final bool transaction = false,
-  final dynamic Function()? resOnErr,
+  final dynamic Function()? onErr,
 }) =>
     transaction
         ? getFieldTr(
             nameColl,
             nameDoc,
             nameField,
-            resOnErr: resOnErr,
+            onErr: onErr,
           )
         : getField(
             nameColl,
             nameDoc,
             nameField,
-            resOnErr: resOnErr,
+            onErr: onErr,
           );
 
 //
@@ -654,7 +654,7 @@ Future<State> copyField1(
     nameDocSrc,
     nameFieldsrc,
     transaction: transaction,
-    resOnErr: () => State.ERROR,
+    onErr: () => State.ERROR,
   ).then((__value) async {
     if (__value != State.ERROR) {
       return await setField1(

@@ -6,5 +6,6 @@
 
 library easy_firestore;
 
-export 'src/utils.dart';
+export 'src/misc.dart';
 export 'src/quota.dart';
+export 'src/utils.dart';

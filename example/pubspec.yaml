@@ -9,8 +9,6 @@ dependencies:
   firebase_auth: ^3.0.0 # https://pub.dev/packages/firebase_auth
   easy_firestore:
     path: ../
-    # git:
-    #   url: https://github.com/robmllze/easy_firestore.git
   flutter:
     sdk: flutter
 flutter:
