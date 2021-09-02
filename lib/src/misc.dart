@@ -21,11 +21,11 @@ String generateUuid() => Uuid().v4().replaceAll("-", "");
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 //
-// STATE
+// Status
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-enum State {
+enum Status {
   // Function ended as intended with TRUE (equal to bool: true)
   TRUE,
   // Function ended as intended with FALSE (equal to bool: false)
@@ -38,7 +38,7 @@ enum State {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-extension State_Methods on State {
+extension Status_Methods on Status {
   //
   //
   //
@@ -60,44 +60,44 @@ extension State_Methods on State {
   //
   //
 
-  State fromBool(final bool value) => value ? State.TRUE : State.FALSE;
+  Status fromBool(final bool value) => value ? Status.TRUE : Status.FALSE;
 
   //
   //
   //
 
-  FutureOr<State> and(final FutureOr<State> Function()? other) {
-    if (this == State.ERROR) return State.ERROR;
-    if (this == State.FALSE) return State.FALSE;
-    final FutureOr<State>? _other = other?.call();
-    if (_other == State.ERROR) return State.ERROR;
-    if (_other == State.FALSE) return State.FALSE;
-    if (this == State.UNCHANGED && _other == State.UNCHANGED)
-      return State.UNCHANGED;
-    return State.TRUE;
+  FutureOr<Status> and(final FutureOr<Status> Function()? other) {
+    if (this == Status.ERROR) return Status.ERROR;
+    if (this == Status.FALSE) return Status.FALSE;
+    final FutureOr<Status>? _other = other?.call();
+    if (_other == Status.ERROR) return Status.ERROR;
+    if (_other == Status.FALSE) return Status.FALSE;
+    if (this == Status.UNCHANGED && _other == Status.UNCHANGED)
+      return Status.UNCHANGED;
+    return Status.TRUE;
   }
 
-  FutureOr<State> operator &(final FutureOr<State> Function()? other) =>
+  FutureOr<Status> operator &(final FutureOr<Status> Function()? other) =>
       this.and(other);
 
   //
   //
   //
 
-  FutureOr<State> or(final FutureOr<State> Function()? other) {
-    if (this == State.TRUE) return State.TRUE;
-    if (other?.call() == State.TRUE) return State.TRUE;
-    return State.FALSE;
+  FutureOr<Status> or(final FutureOr<Status> Function()? other) {
+    if (this == Status.TRUE) return Status.TRUE;
+    if (other?.call() == Status.TRUE) return Status.TRUE;
+    return Status.FALSE;
   }
 
-  FutureOr<State> operator |(final FutureOr<State> Function()? other) =>
+  FutureOr<Status> operator |(final FutureOr<Status> Function()? other) =>
       this.or(other);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-extension Bool_StateMethods on bool {
-  State get toState => this ? State.TRUE : State.FALSE;
+extension Bool_StatusMethods on bool {
+  Status get toStatus => this ? Status.TRUE : Status.FALSE;
 }
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░

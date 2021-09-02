@@ -132,7 +132,7 @@ Future<ResultTestSpeed?> testSpeed([
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> check() {
+Future<Status> check() {
   final _ref = _fs.collection("#").doc(generateUuid());
   quota.regDelete();
   quota.regRead();
@@ -142,11 +142,11 @@ Future<State> check() {
       .then((_) => _ref.get().then((__doc) {
             if (__doc.exists) {
               _ref.delete();
-              return State.TRUE;
+              return Status.TRUE;
             }
-            return State.FALSE;
+            return Status.FALSE;
           }))
-      .catchError((_) => State.ERROR);
+      .catchError((_) => Status.ERROR);
 }
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -394,7 +394,7 @@ Future<int?> getCountDocs(
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> setDoc(
+Future<Status> setDoc(
   final String nameColl,
   final String nameDoc,
   final Map<String, dynamic> data, {
@@ -403,19 +403,19 @@ Future<State> setDoc(
 }) {
   quota.regWrite();
   final _doc = _fs.collection(nameColl).doc(nameDoc);
-  return Future<State>(
+  return Future<Status>(
     () async => overwrite || await _doc.get().then((__doc) => !__doc.exists)
         ? await _doc
             .set(data, SetOptions(merge: merge))
-            .then((_) => State.TRUE)
+            .then((_) => Status.TRUE)
             .catchError((e) {
             _LOG.error(
               "Failed to set doc $nameColl/$nameDoc: $e",
               "<#l=414>",
             );
-            return State.ERROR;
+            return Status.ERROR;
           })
-        : State.UNCHANGED,
+        : Status.UNCHANGED,
   );
 }
 
@@ -423,7 +423,7 @@ Future<State> setDoc(
 //
 //
 
-Future<State> setDocTr(
+Future<Status> setDocTr(
   final String nameColl,
   final String nameDoc,
   final Map<String, dynamic> value, {
@@ -438,15 +438,15 @@ Future<State> setDocTr(
           return !__doc.exists;
         }).whenComplete(() => quota.regRead())) {
       __tr.set(_doc, value, SetOptions(merge: merge));
-      return State.TRUE;
+      return Status.TRUE;
     }
-    return State.UNCHANGED;
+    return Status.UNCHANGED;
   }, timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT)).catchError((e) {
     _LOG.error(
       "Failed to set doc $nameColl/$nameDoc: $e",
       "<#l=447>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -454,7 +454,7 @@ Future<State> setDocTr(
 //
 //
 
-Future<State> setDoc1(
+Future<Status> setDoc1(
   final String nameColl,
   final String nameDoc,
   final Map<String, dynamic> value, {
@@ -482,7 +482,7 @@ Future<State> setDoc1(
 //
 //
 
-Future<State> setField1(
+Future<Status> setField1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -511,7 +511,7 @@ Future<State> setField1(
 //
 //
 
-Future<State> setDocEmpty(
+Future<Status> setDocEmpty(
   final String nameColl,
   final String nameDoc,
   final Map<String, dynamic> value, {
@@ -573,19 +573,19 @@ class ElField {
 //
 //
 
-Future<State> setBatch(final List<ElDoc> all) {
+Future<Status> setBatch(final List<ElDoc> all) {
   final _batch = _fs.batch();
   all.forEach((__el) => _batch.set(
       _fs.collection(__el.nameColl).doc(__el.nameDoc),
       __el.value,
       SetOptions(merge: true)));
   quota.regWrite(all.length);
-  return _batch.commit().then((_) => State.TRUE).catchError((e) {
+  return _batch.commit().then((_) => Status.TRUE).catchError((e) {
     _LOG.error(
       "Failed to set batch: $e",
       "<#l=586>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -593,18 +593,18 @@ Future<State> setBatch(final List<ElDoc> all) {
 //
 //
 
-Future<State> deleteBatch(final List<ElDoc> all) {
+Future<Status> deleteBatch(final List<ElDoc> all) {
   final WriteBatch _batch = _fs.batch();
   all.forEach((__el) => _batch.delete(
         _fs.collection(__el.nameColl).doc(__el.nameDoc),
       ));
   quota.regDelete(all.length);
-  return _batch.commit().then((_) => State.TRUE).catchError((e) {
+  return _batch.commit().then((_) => Status.TRUE).catchError((e) {
     _LOG.error(
       "Failed to delete batch: $e",
       "<#l=605>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -614,7 +614,7 @@ Future<State> deleteBatch(final List<ElDoc> all) {
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> copyDoc1(
+Future<Status> copyDoc1(
   final String nameCollSrc,
   final String nameDocSrc,
   final String nameCollDst,
@@ -626,7 +626,7 @@ Future<State> copyDoc1(
     nameDocSrc,
     transaction: transaction,
   ).then((__value) async {
-    return (__value != null).toState &
+    return (__value != null).toStatus &
         () => setDoc1(
               nameCollDst,
               nameDocDst,
@@ -640,7 +640,7 @@ Future<State> copyDoc1(
 //
 //
 
-Future<State> copyField1(
+Future<Status> copyField1(
   final String nameCollSrc,
   final String nameDocSrc,
   final String nameFieldsrc,
@@ -654,9 +654,9 @@ Future<State> copyField1(
     nameDocSrc,
     nameFieldsrc,
     transaction: transaction,
-    onErr: () => State.ERROR,
+    onErr: () => Status.ERROR,
   ).then((__value) async {
-    if (__value != State.ERROR) {
+    if (__value != Status.ERROR) {
       return await setField1(
         nameCollDst,
         nameDocDst,
@@ -665,7 +665,7 @@ Future<State> copyField1(
         transaction: transaction,
       );
     }
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -675,7 +675,7 @@ Future<State> copyField1(
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> increment(
+Future<Status> increment(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -694,7 +694,7 @@ Future<State> increment(
 //
 //
 
-Future<State> multiply1(
+Future<Status> multiply1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -716,7 +716,7 @@ Future<State> multiply1(
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> fieldListAdd1(
+Future<Status> fieldListAdd1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -750,7 +750,7 @@ Future<State> fieldListAdd1(
 //
 //
 
-Future<State> fieldListRemoveFirst1(
+Future<Status> fieldListRemoveFirst1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -784,7 +784,7 @@ Future<State> fieldListRemoveFirst1(
 //
 //
 
-Future<State> fieldListRemoveAll1(
+Future<Status> fieldListRemoveAll1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -818,7 +818,7 @@ Future<State> fieldListRemoveAll1(
 //
 //
 
-Future<State> fieldListContains1(
+Future<Status> fieldListContains1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -834,7 +834,7 @@ Future<State> fieldListContains1(
     if (__value is List) {
       for (final el in items) {
         if (__value.contains(el)) {
-          return State.TRUE;
+          return Status.TRUE;
         }
       }
     }
@@ -844,9 +844,9 @@ Future<State> fieldListContains1(
             "Field value not a list or null.",
         "<#l=845>",
       );
-      return State.ERROR;
+      return Status.ERROR;
     }
-    return State.FALSE;
+    return Status.FALSE;
   });
 }
 
@@ -865,7 +865,7 @@ typedef GetSetFieldFn = FutureOr<dynamic> Function(dynamic);
 //
 //
 
-Future<State> getSetDoc(
+Future<Status> getSetDoc(
   final String nameColl,
   final String nameDoc,
   final GetSetDocFn getSet, {
@@ -873,7 +873,7 @@ Future<State> getSetDoc(
   final bool merge = true,
 }) {
   return getDoc(nameColl, nameDoc).then((__old) async {
-    if (!create && __old == null) return State.FALSE;
+    if (!create && __old == null) return Status.FALSE;
     final _new = await getSet(__old);
     return _new != null
         ? (await setDoc(
@@ -883,7 +883,7 @@ Future<State> getSetDoc(
             merge: merge,
             overwrite: true,
           ))
-        : State.FALSE;
+        : Status.FALSE;
   });
 }
 
@@ -891,7 +891,7 @@ Future<State> getSetDoc(
 //
 //
 
-Future<State> getSetField(
+Future<Status> getSetField(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -900,7 +900,7 @@ Future<State> getSetField(
   final bool merge = true,
 }) {
   return getField(nameColl, nameDoc, nameField).then((__old) async {
-    if (!create && __old == null) return State.FALSE;
+    if (!create && __old == null) return Status.FALSE;
     final _new = await getSet(__old);
     return _new != null
         ? (await setField1(
@@ -910,7 +910,7 @@ Future<State> getSetField(
             _new,
             merge: merge,
           ))
-        : State.FALSE;
+        : Status.FALSE;
   });
 }
 
@@ -918,7 +918,7 @@ Future<State> getSetField(
 //
 //
 
-Future<State> getSetDocTr(
+Future<Status> getSetDocTr(
   final String nameColl,
   final String nameDoc,
   final GetSetDocFn getSet, {
@@ -931,14 +931,14 @@ Future<State> getSetDocTr(
   return _fs
       .runTransaction(
           (__tr) async => await __tr.get(_doc).then((final __doc) async {
-                if (!create && !__doc.exists) return State.FALSE;
+                if (!create && !__doc.exists) return Status.FALSE;
                 final _old = __doc.data();
                 final _new = await getSet(_old);
                 if (_new != null) {
                   __tr.set(_doc, _new, SetOptions(merge: merge));
-                  return State.TRUE;
+                  return Status.TRUE;
                 }
-                return State.FALSE;
+                return Status.FALSE;
               }),
           timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT))
       .catchError((e) {
@@ -946,7 +946,7 @@ Future<State> getSetDocTr(
       "Failed to get and set doc $nameColl/$nameDoc: $e",
       "<#l=947>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -954,7 +954,7 @@ Future<State> getSetDocTr(
 //
 //
 
-Future<State> getSetDoc1(
+Future<Status> getSetDoc1(
   final String nameColl,
   final String nameDoc,
   final GetSetDocFn getSet, {
@@ -982,7 +982,7 @@ Future<State> getSetDoc1(
 //
 //
 
-Future<State> getSetFieldTr(
+Future<Status> getSetFieldTr(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -997,13 +997,13 @@ Future<State> getSetFieldTr(
       .runTransaction(
           (__tr) async => await __tr.get(_doc).then((__doc) async {
                 final _old = __doc.data()?[nameField];
-                if (!create && _old == null) return State.FALSE;
+                if (!create && _old == null) return Status.FALSE;
                 final _new = await getSet(_old);
                 if (_new != null) {
                   __tr.set(_doc, {nameField: _new}, SetOptions(merge: merge));
-                  return State.TRUE;
+                  return Status.TRUE;
                 }
-                return State.FALSE;
+                return Status.FALSE;
               }),
           timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT))
       .catchError((e) {
@@ -1011,7 +1011,7 @@ Future<State> getSetFieldTr(
       "Failed to get and set field $nameColl/$nameDoc/$nameField: $e",
       "<#l=1012>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1019,7 +1019,7 @@ Future<State> getSetFieldTr(
 //
 //
 
-Future<State> getSetField1(
+Future<Status> getSetField1(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -1053,20 +1053,20 @@ Future<State> getSetField1(
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 /// Deletes a document on Firebase via a transaction.
-Future<State> deleteDocTr(
+Future<Status> deleteDocTr(
   final String nameColl,
   final String nameDoc,
 ) {
   final _doc = _fs.collection(nameColl).doc(nameDoc);
   return _fs.runTransaction((__tr) async {
     __tr.delete(_doc);
-    return State.TRUE;
+    return Status.TRUE;
   }, timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT)).catchError((e) {
     _LOG.error(
       "Failed to delete doc $nameColl/$nameDoc: $e",
       "<#l=1067>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1074,7 +1074,7 @@ Future<State> deleteDocTr(
 //
 //
 
-Future<State> deleteField(
+Future<Status> deleteField(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -1093,20 +1093,20 @@ Future<State> deleteField(
 //
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-Future<State> existsColl(
+Future<Status> existsColl(
   final String nameColl,
 ) {
   quota.regRead();
   return _fs
       .collection(nameColl)
       .get()
-      .then((__query) => __query.size > 0 ? State.TRUE : State.FALSE)
+      .then((__query) => __query.size > 0 ? Status.TRUE : Status.FALSE)
       .catchError((e) {
     _LOG.error(
       "Failed to check existence at $nameColl: $e",
       "<#l=1107>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1114,7 +1114,7 @@ Future<State> existsColl(
 //
 //
 
-Future<State> existsDoc(
+Future<Status> existsDoc(
   final String nameColl,
   final String nameDoc,
 ) {
@@ -1123,20 +1123,20 @@ Future<State> existsDoc(
       .collection(nameColl)
       .doc(nameDoc)
       .get()
-      .then((__doc) => __doc.exists ? State.TRUE : State.FALSE)
+      .then((__doc) => __doc.exists ? Status.TRUE : Status.FALSE)
       .catchError((e) {
     _LOG.error(
       "Failed to check existence. $nameColl/$nameDoc: $e",
       "<#l=1130>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 //
 //
 //
 
-Future<State> existsDocTr(
+Future<Status> existsDocTr(
   final String nameColl,
   final String nameDoc,
 ) {
@@ -1145,14 +1145,14 @@ Future<State> existsDocTr(
       .runTransaction(
           (__tr) async => await __tr
               .get(_fs.collection(nameColl).doc(nameDoc))
-              .then((__doc) => __doc.exists ? State.TRUE : State.FALSE),
+              .then((__doc) => __doc.exists ? Status.TRUE : Status.FALSE),
           timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT))
       .catchError((e) {
     _LOG.error(
       "Failed to check existence of doc $nameColl/$nameDoc: $e",
       "<#l=1153>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1160,7 +1160,7 @@ Future<State> existsDocTr(
 //
 //
 
-Future<State> existsDoc1(
+Future<Status> existsDoc1(
   final String nameColl,
   final String nameDoc, {
   final bool transaction = false,
@@ -1179,7 +1179,7 @@ Future<State> existsDoc1(
 //
 //
 
-Future<State> existsField(
+Future<Status> existsField(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -1190,13 +1190,13 @@ Future<State> existsField(
       .doc(nameDoc)
       .get()
       .then((__doc) =>
-          __doc.data()?[nameField] != null ? State.TRUE : State.FALSE)
+          __doc.data()?[nameField] != null ? Status.TRUE : Status.FALSE)
       .catchError((e) {
     _LOG.error(
       "Failed to check existence of field $nameColl/$nameDoc/$nameField: $e",
       "<#l=1197>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1204,7 +1204,7 @@ Future<State> existsField(
 //
 //
 
-Future<State> existsFieldTr(
+Future<Status> existsFieldTr(
   final String nameColl,
   final String nameDoc,
   final String nameField,
@@ -1215,15 +1215,16 @@ Future<State> existsFieldTr(
       .runTransaction(
           (__tr) async => await __tr
               .get(_firestore.collection(nameColl).doc(nameDoc))
-              .then((__doc) =>
-                  __doc.data()?[nameField] != null ? State.TRUE : State.FALSE),
+              .then((__doc) => __doc.data()?[nameField] != null
+                  ? Status.TRUE
+                  : Status.FALSE),
           timeout: Duration(seconds: _TIMEOUT_TRANSACTION_DEFAULT))
       .catchError((e) {
     _LOG.error(
       "Failed to check existence of field $nameColl/$nameDoc/$nameField: $e",
       "<#l=1224>",
     );
-    return State.ERROR;
+    return Status.ERROR;
   });
 }
 
@@ -1231,7 +1232,7 @@ Future<State> existsFieldTr(
 //
 //
 
-Future<State> existsField1(
+Future<Status> existsField1(
   final String nameColl,
   final String nameDoc,
   final String nameField, {
